@@ -7,6 +7,7 @@ dotenv_path = Path("./.env")
 load_dotenv(dotenv_path=dotenv_path)
 
 # Database Connection Variables
+remote_pass = os.getenv("skydutta_mysql_password")
 global_host, global_port, global_user, global_password, global_database = "localhost", "3306", "root", "", "prawnpostdb"
 
 # Data Query and Validation Functions Starts Below
