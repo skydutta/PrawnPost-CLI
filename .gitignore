@@ -2,4 +2,5 @@
 assets/__pycache__
 __pycache__
 testScript.py
+testScript2.py
 varbinary_bcrypt_table.py

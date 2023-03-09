@@ -1,4 +1,4 @@
-from assets import username_exists, login_user, create_new_user, fetch_user_id
+from assets import username_exists, login_user, create_new_user, fetch_user_id, create_new_post
 
 main_loop = True
 while main_loop:
@@ -42,16 +42,61 @@ while main_loop:
             print("\tEnter Valid Input")
             continue
 
-    # {Step-2} => Post Log-In/Sign-Up Workflow
+    # {Step-2} => Getting Post Log-In/Sign-Up Workflow User Details
     if s1_option == 1:
         current_username = new_username.lower().replace(" ", "")
         current_user_id = fetch_user_id(current_username)
-        print("\tSign-Up Successful", current_username)
-        print("\tYour User-ID is", current_user_id)
         main_loop = False
     elif s1_option == 2:
         current_username = login_username.lower().replace(" ", "")
         current_user_id = fetch_user_id(current_username)
-        print("\tLog-In Successful", current_username)
-        print("\tYour User-ID is", current_user_id)
         main_loop = False
+
+user_state = lambda: "Log-In" if s1_option == 2 else "Sign-Up"
+current_state = user_state()
+print()
+print(f"\t{current_state} Successful", "@"+current_username)
+# print("\tYour User-ID is", current_user_id)
+print()
+
+# Post Sign-Up/Log-In CLI Application Workflow {Step-3}
+print("\t\tWelcome @%s to PrawnPost CLI"%(current_username))
+print()
+app_loop = True
+while app_loop:
+    print()
+    app_option = int(input("\tCreate New Post (1) | See Posts and Comment (2) => "))
+    print()
+    if app_option == 1:
+        post_title_loop = True
+        while post_title_loop:
+            print()
+            post_title = input("\tPost Title => ")
+            print()
+            if len(post_title.strip()) == 0:
+                print("\tPost Title Cannot Be Empty. Enter Again.")
+                continue
+            else:
+                post_title_loop = False
+        post_content_loop = True
+        while  post_content_loop:
+            print()
+            post_content = input("\tPost Content => ")
+            print()
+            if len(post_content.strip()) == 0:
+                print("\tPost Content Cannot Be Empty. Enter Again.")
+                continue
+            else:
+                post_content_loop = False
+        # Creating the New Post
+        create_new_post(current_user_id, post_title, post_content)
+        print()
+        print(f"\tNew Post Created by @{current_username}")
+        print()
+    elif app_option == 2:
+        pass
+    else:
+        print()
+        print("\tNo Such App Option")
+        print()
+

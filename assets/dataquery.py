@@ -120,6 +120,22 @@ def fetch_user_id(username: str):
   else:
      return
 
+def create_new_post(user_id: str, post_title: str, post_content: str):
+   """
+   Input: user_id {str} | post_title {str} | post_content {str}
+   Output: [Creates New Post]
+   """
+   new_post_id = str(uuid.uuid1())
+   Q = "INSERT INTO posts VALUES('%s', '%s', '%s', '%s')"%(new_post_id, post_title, post_content, user_id)
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   cursor.execute(Q)
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+
+
+
 # Data Query and Validation Functions Ends Above
 
 # Closing the Connections -> Function Specific
