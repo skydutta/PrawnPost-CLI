@@ -26,7 +26,6 @@ CREATE TABLE comments(
     comment_content MEDIUMTEXT NOT NULL,
     user_id VARCHAR(255) NOT NULL,
     post_id VARCHAR(255) NOT NULL, 
-    reply_to_id VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );

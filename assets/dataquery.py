@@ -10,6 +10,15 @@ load_dotenv(dotenv_path=dotenv_path)
 remote_pass = os.getenv("skydutta_mysql_password")
 global_host, global_port, global_user, global_password, global_database = "localhost", "3306", "root", "", "prawnpostdb"
 
+# Connection Function -> Test with Sign-Up and Log-In Functions (Then All Other Functions)
+def db_connect():
+   try:
+      mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+      if mydb.is_connected() == True:
+         return True
+   except:
+      return False
+
 # Data Query and Validation Functions Starts Below
 
 def username_exists(username: str):
@@ -134,11 +143,106 @@ def create_new_post(user_id: str, post_title: str, post_content: str):
    cursor.close()
    mydb.close()
 
+def fetch_username(user_id: str):
+   """
+   Input: user_id {str}
+   Output: username {str} -> If Valid user_id is given | None -> If Valid user_id is not given
+   """
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "SELECT username FROM users WHERE user_id='%s'"%(user_id)
+   cursor.execute(Q)
+   username_tuple = cursor.fetchone()
+   username = username_tuple[0]
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+   return username
 
+def fetch_all_posts():
+   """
+   Input: [Nothing]
+   Output: posts {list} -> Contains Tuples of Posts with username, post_id, post_title, post_content
+   """
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "SELECT user_id, post_id, post_title, post_content FROM posts"
+   cursor.execute(Q)
+   posts_fetched = cursor.fetchall()
+   posts = list()
+   for post in posts_fetched:
+      username = fetch_username(post[0])
+      posts.append((username, post[1], post[2], post[3]))
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+   return posts
+
+def valid_post_id(post_id: str):
+   """
+   Input: post_id {str}
+   Output: True {bool} -> If Post-ID is Valid | False {bool} -> If Post-ID is InValid
+   """
+   post_id = post_id.replace(" ", "")
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "SELECT post_id FROM posts WHERE post_id='%s'"%(post_id)
+   cursor.execute(Q)
+   post_id_data = cursor.fetchone()
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+   try:
+      if post_id_data[0] == post_id:
+        return True
+   except:
+      return False
+   
+def create_comment(user_id: str, post_id: str, comment: str):
+   """
+   Input: user_id {str} | post_id {str} | comment {str}
+   Output: [Creates the Comment in the comments table]
+   """
+   comment_id = str(uuid.uuid1())
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "INSERT INTO comments VALUES('%s', '%s', '%s', '%s')"%(comment_id, comment, user_id, post_id)
+   cursor.execute(Q)
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+
+def fetch_post(post_id: str):
+   """
+   Input: post_id {str}
+   Output: post {tuple} -> Fetched from MySQL DB using post_id
+   """
+   post_id = post_id.replace(" ", "")
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "SELECT * FROM posts WHERE post_id='%s'"%(post_id)
+   cursor.execute(Q)
+   post = cursor.fetchone()
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+   return post
+
+def fetch_post_comments(post_id: str):
+   """
+   Input: post_id {str}
+   Output: post_comments {list} -> Fetched from MySQL DB using post_id
+   """
+   post_id = post_id.replace(" ", "")
+   mydb = conn.connect(host = global_host, port = global_port, user = global_user, password = global_password, database = global_database)
+   cursor = mydb.cursor()
+   Q = "SELECT * FROM comments WHERE post_id='%s'"%(post_id)
+   cursor.execute(Q)
+   post_comments = cursor.fetchall()
+   mydb.commit()
+   cursor.close()
+   mydb.close()
+   return post_comments
 
 # Data Query and Validation Functions Ends Above
 
-# Closing the Connections -> Function Specific
-# mydb.commit()
-# cursor.close()
-# mydb.close()
